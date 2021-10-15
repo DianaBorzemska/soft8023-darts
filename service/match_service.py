@@ -7,10 +7,13 @@ class MatchManager(ABC):
         
     def set_match(self, match):
         self.match = match
-        self.post_init()
+       # self.post_init()
         
     def end_match(self):
-        self.match.active = False
+        self.match.status = False
+
+    def finalize_setup(self):
+        self.post_init()
         
     @abstractmethod
     def post_init(self):
@@ -25,7 +28,7 @@ class MatchVisitTemplate(ABC):
         result = self.check_winning_condition(player_index,visit)
         self.record_statistics(player_index,visit,result)
         
-        return result, self.format_summary(player_ndex, visit)
+        return result, self.format_summary(player_index, visit)
     
     @abstractmethod
     def validate_visit(self, player_index, visit):

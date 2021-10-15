@@ -1,6 +1,6 @@
 class DartsMatch:
 
-    def __init__(self, type, player1, player2):
+    def __init__(self):
         self.active = True
         self.players = []
         self.last_player_index = -1

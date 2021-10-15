@@ -1,5 +1,7 @@
 from datatype.enums import DartMultiplier
 
+from datetime import datetime
+
 class Dart:
     def __init__(self, multiplier, segment):
         self.multiplier = multiplier
@@ -21,13 +23,15 @@ class Visit:
     
     def __init__(self):
         self.darts=[]
+        self.timestamp = datetime.now()
         
     def __init__(self,darts):
         self.darts=[]
         self.add_darts(darts)
+        self.timestamp = datetime.now()
         
     def add_dart(self,dart):
-        self.darts.append(Dart(dart[0],dart[1]))
+        self.darts.append(Dart(dart.multiplier,dart.segment))
         
     def add_darts(self,darts):
         for dart in darts:

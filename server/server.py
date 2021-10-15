@@ -7,7 +7,7 @@ import grpc
 from app.gameimpl import x01_match
 from darts_match_pb2 import VisitResponse, RegisterResponse, FinalizeResponse, MatchResponse, WatchResponse, Player, Dart
 from darts_match_pb2_grpc import DartsMatchServicer, add_DartsMatchServicer_to_server
-from app.server.match_registry import MatchRegistry
+from server.registry import MatchRegistry
 from domain import darts_match, visit
 from pattern import object_factory
 
@@ -62,6 +62,35 @@ class DartServer(DartsMatchServicer):
                 darts=[Dart(multiplier=my_visit.darts[0].multiplier, segment=my_visit.darts[0].segment), 
                 Dart(multiplier=my_visit.darts[1].multiplier, segment=my_visit.darts[1].segment),
                 Dart(multiplier=my_visit.darts[2].multiplier, segment=my_visit.darts[2].segment)], score =0)
+
+        while True:
+            if len(match.match.visits[0]) > v + 1:
+                y = len(match.match.visits[0])
+                for x in range(v+1, y):
+                    for p in range(0, len(match.match.players)):
+                        while len(match.match.visits[p]) < y:
+                            time.sleep(1)
+                        yield WatchResponse(player=Player(userName=match.match.players[p], playerIndex=p),
+                        darts=[Dart(multiplier=match.match.visits[p][x].darts[0].multiplier,
+                        segment=match.match.visits[p][x].darts[0].segment),
+                        Dart(multiplier=match.match.visits[p][x].darts[1].multiplier,
+                        segment=match.match.visits[p][x].darts[1].segment),
+                        Dart(multiplier=match.match.visits[p][x].darts[2].multiplier,
+                        segment=match.match.visits[p][x].darts[2].segment)],score=0)
+                v=y-1
+            time.sleep(1)
+
+def serve():
+    server=grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    add_DartsMatchServicer_to_server(DartServer(),server)
+    server.add_insecure_port('[::]:50055')
+    server.start()
+    server.wait_for_termination()
+
+if __name__=='__main__':
+    logging.basicConfig()
+    serve()
+
                 
 
 
